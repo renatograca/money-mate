@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.mequi'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation('org.projectlombok:lombok:1.18.30')
+    implementation('com.google.inject:guice:5.1.0')
+    implementation('org.slf4j:slf4j-simple:2.0.16')
+    implementation('io.javalin:javalin:6.4.0')
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
