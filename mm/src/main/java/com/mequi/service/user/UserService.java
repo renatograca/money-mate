@@ -1,7 +1,7 @@
 package com.mequi.service.user;
 
-import io.javalin.http.Context;
+import com.mequi.config.context.UserContext;
 
 public interface UserService {
-  void create(Context context);
+  void create(UserContext context);
 }
