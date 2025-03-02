@@ -1,0 +1,17 @@
+name: Block Feature PRs to Main
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR source branch
+        run: |
+          if [[ $GITHUB_HEAD_REF == feature/* ]]; then
+            echo "PRs from feature branches are not allowed to main."
+            exit 1
+          fi
