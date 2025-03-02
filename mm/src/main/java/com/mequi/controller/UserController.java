@@ -11,7 +11,7 @@ import io.javalin.http.HttpStatus;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(onConstructor_ = @__(@Inject))
-public class UserController implements Controller{
+public class UserController implements Controller {
 
   private final UserContextService userContextService;
   private final UserService service;
