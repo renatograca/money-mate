@@ -18,7 +18,12 @@ public class UserController implements Controller {
 
 
   public void getUser(Context context) {
-    context.json("Hello World!").status(HttpStatus.OK);
+    final var id = Long.valueOf(context.pathParam("user_id"));
+    final var userOptional = service.findById(id);
+    if (userOptional.isEmpty()) {
+      context.json("Not Found").status(HttpStatus.NOT_FOUND);
+    }
+    userOptional.map(user -> context.json(user).status(HttpStatus.OK));
   }
 
   public void createUser(Context context) {

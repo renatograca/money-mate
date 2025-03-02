@@ -7,7 +7,9 @@ import com.mequi.config.context.UserContext;
 import com.mequi.mapper.UserMapper;
 import com.mequi.repository.user.UserRepository;
 import com.mequi.service.user.UserService;
+import com.mequi.service.user.dto.UserDTO;
 import com.mequi.service.user.dto.UserData;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,9 +22,22 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
 
   @Override
+  public Optional<UserDTO> findById(Long id) {
+     final var userEntity = userRepository.findById(id);
+     return userEntity.map(userMapper::toUserDTO);
+  }
+
+  @Override
   public void create(UserContext context) {
     try {
       final var userData = mapper.readValue(context.context().body(), UserData.class);
+      final var userOptional = userRepository.findByEmail(userData.email());
+
+      if (userOptional.isPresent()) {
+        log.warn("Email de usuario já cadastrado");
+        throw new RuntimeException("email already registered.");
+      }
+
       final var userEntity = userMapper.toUserEntity(userData);
       userRepository.create(userEntity);
     } catch (JsonProcessingException e) {

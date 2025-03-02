@@ -1,19 +1,14 @@
-package com.mequi.repository.user.entity;
+package com.mequi.service.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.mequi.service.user.dto.StatusAccount;
-import java.sql.Date;
-import lombok.Builder;
+import java.util.Date;
 
-@Builder
-public record UserEntity(
-    Long id,
+public record UserDTO(
     String fullName,
     String email,
-    String password,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     Date dateOfBirth,
-    Long phone,
+    long phone,
     StatusAccount accountStatus
 ) {
 }
