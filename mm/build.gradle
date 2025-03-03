@@ -54,4 +54,16 @@ jacocoTestReport {
         xml.required = true
         html.required = true
     }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, excludes: [
+                    'com/mequi/config/**',
+                    'com/mequi/**/entity/*',
+                    'com/mequi/mapper/*',
+                    'com/mequi/routes/*',
+                    'com/mequi/**/dto/*',
+                    'com/mequi/Main.class'
+            ])
+        }))
+    }
 }
