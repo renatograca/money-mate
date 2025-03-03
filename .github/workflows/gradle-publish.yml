@@ -66,6 +66,9 @@ jobs:
           else
             echo "Cobertura de testes acima do mínimo exigido ($MIN_COVERAGE%)."
           fi
+
+      - name: ls brabo
+        run: ls mm/build/reports/jacoco/test
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
