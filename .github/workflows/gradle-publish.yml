@@ -27,9 +27,6 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Install xmllint
-        run: sudo apt-get install -y libxml2-utils
-
       - name: Grant execute permission to gradlew
         run: chmod +x gradlew
 
@@ -39,27 +36,36 @@ jobs:
       - name: Generate JaCoCo report
         run: ./gradlew jacocoTestReport
 
-      - name: Validate test coverage
+      - name: Validate test coverage using Python
         run: |
-          # Instala o jq para processar o XML
-          sudo apt-get install -y jq
+          python - <<EOF
+          import xml.etree.ElementTree as ET
 
-          # Extrai a cobertura total do relatório XML
-          COVERAGE=$(xmllint --xpath "string(//report/counter[@type='LINE']/@missed)" build/reports/jacoco/test/jacocoTestReport.xml)
-          TOTAL=$(xmllint --xpath "string(//report/counter[@type='LINE']/@covered)" build/reports/jacoco/test/jacocoTestReport.xml)
-          COVERAGE_PERCENT=$(echo "scale=2; $TOTAL / ($TOTAL + $COVERAGE) * 100" | bc)
+          report_path = "build/reports/jacoco/test/jacocoTestReport.xml"
 
-          echo "Cobertura de testes: $COVERAGE_PERCENT%"
+          try:
+              tree = ET.parse(report_path)
+              root = tree.getroot()
 
-          # Define a cobertura mínima exigida
-          MIN_COVERAGE=80
+              missed = sum(int(counter.get("missed", 0)) for counter in root.findall(".//counter[@type='LINE']"))
+              covered = sum(int(counter.get("covered", 0)) for counter in root.findall(".//counter[@type='LINE']"))
 
-          if (( $(echo "$COVERAGE_PERCENT < $MIN_COVERAGE" | bc -l) )); then
-            echo "Cobertura de testes abaixo do mínimo exigido ($MIN_COVERAGE%)."
-            exit 1
-          else
-            echo "Cobertura de testes acima do mínimo exigido ($MIN_COVERAGE%)."
-          fi
+              coverage_percent = (covered / (covered + missed)) * 100 if (covered + missed) > 0 else 0
+
+              print(f"Cobertura de testes: {coverage_percent:.2f}%")
+
+              MIN_COVERAGE = 80
+              if coverage_percent < MIN_COVERAGE:
+                  print(f"Erro: Cobertura de testes abaixo do mínimo exigido ({MIN_COVERAGE}%)")
+                  exit(1)
+              else:
+                  print("Cobertura de testes dentro do mínimo exigido.")
+
+          except Exception as e:
+              print(f"Erro ao processar o relatório de cobertura: {e}")
+              exit(1)
+          EOF
+
       - name: Upload JaCoCo report as artifact
         uses: actions/upload-artifact@v4
         with:
