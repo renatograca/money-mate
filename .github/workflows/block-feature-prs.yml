@@ -11,7 +11,18 @@ jobs:
     steps:
       - name: Check PR source branch
         run: |
-          if [[ $GITHUB_HEAD_REF == feature/* ]]; then
-            echo "PRs from feature branches are not allowed to main."
-            exit 1
-          fi
+          ALLOWED_BRANCHES=("hotfix/*" "fix/*" "release/*")
+          PR_BRANCH="$GITHUB_HEAD_REF"
+
+          # Verifica se a branch do PR está na lista de branches permitidas
+          for allowed_branch in "${ALLOWED_BRANCHES[@]}"; do
+            if [[ $PR_BRANCH == $allowed_branch ]]; then
+              echo "PR from branch '$PR_BRANCH' is allowed."
+              exit 0
+            fi
+          done
+
+          # Se a branch não estiver na lista permitida, bloqueia o PR
+          echo "PRs from branch '$PR_BRANCH' are not allowed to main."
+          echo "Allowed branches are: ${ALLOWED_BRANCHES[*]}"
+          exit 1
