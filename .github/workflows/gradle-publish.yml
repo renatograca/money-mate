@@ -36,7 +36,7 @@ jobs:
       - name: Generate JaCoCo report
         run: ./gradlew jacocoTestReport
 
-      - name: Validate test coverage using Python
+      - name: Validate test coverage
         run: |
           python - <<EOF
           import xml.etree.ElementTree as ET
@@ -65,9 +65,3 @@ jobs:
               print(f"Erro ao processar o relatório de cobertura: {e}")
               exit(1)
           EOF
-
-      - name: Upload JaCoCo report as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: jacoco-report
-          path: build/reports/jacoco/test/html/index.html
