@@ -51,8 +51,8 @@ jobs:
           sudo apt-get install -y jq
 
           # Extrai a cobertura total do relatório XML
-          COVERAGE=$(xmllint --xpath "string(//report/counter[@type='LINE']/@missed)" build/reports/jacoco/test/jacocoTestReport.xml)
-          TOTAL=$(xmllint --xpath "string(//report/counter[@type='LINE']/@covered)" build/reports/jacoco/test/jacocoTestReport.xml)
+          COVERAGE=$(xmllint --xpath "string(//report/counter[@type='LINE']/@missed)" mm/build/reports/jacoco/test/jacocoTestReport.xml)
+          TOTAL=$(xmllint --xpath "string(//report/counter[@type='LINE']/@covered)" mm/build/reports/jacoco/test/jacocoTestReport.xml)
           COVERAGE_PERCENT=$(echo "scale=2; $TOTAL / ($TOTAL + $COVERAGE) * 100" | bc)
 
           echo "Cobertura de testes: $COVERAGE_PERCENT%"
