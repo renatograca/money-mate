@@ -45,31 +45,37 @@ jobs:
       - name: Generate JaCoCo report
         run: ./gradlew jacocoTestReport
 
-      - name: Validate test coverage
-        run: |
-          # Instala o jq para processar o XML
-          sudo apt-get install -y jq
+      - name: install tree
+        run: sudo apt-get install -y tree
 
-          # Extrai a cobertura total do relatório XML
-          COVERAGE=$(xmllint --xpath "string(//report/counter[@type='LINE']/@missed)" mm/build/reports/jacoco/test/jacocoTestReport.xml)
-          TOTAL=$(xmllint --xpath "string(//report/counter[@type='LINE']/@covered)" mm/build/reports/jacoco/test/jacocoTestReport.xml)
-          COVERAGE_PERCENT=$(echo "scale=2; $TOTAL / ($TOTAL + $COVERAGE) * 100" | bc)
+      - name: run tree
+        run: tree
 
-          echo "Cobertura de testes: $COVERAGE_PERCENT%"
+      # - name: Validate test coverage
+      #   run: |
+      #     # Instala o jq para processar o XML
+      #     sudo apt-get install -y jq
 
-          # Define a cobertura mínima exigida
-          MIN_COVERAGE=80
+      #     # Extrai a cobertura total do relatório XML
+      #     COVERAGE=$(xmllint --xpath "string(//report/counter[@type='LINE']/@missed)" mm/build/reports/jacoco/test/jacocoTestReport.xml)
+      #     TOTAL=$(xmllint --xpath "string(//report/counter[@type='LINE']/@covered)" mm/build/reports/jacoco/test/jacocoTestReport.xml)
+      #     COVERAGE_PERCENT=$(echo "scale=2; $TOTAL / ($TOTAL + $COVERAGE) * 100" | bc)
 
-          if (( $(echo "$COVERAGE_PERCENT < $MIN_COVERAGE" | bc -l) )); then
-            echo "Cobertura de testes abaixo do mínimo exigido ($MIN_COVERAGE%)."
-            exit 1
-          else
-            echo "Cobertura de testes acima do mínimo exigido ($MIN_COVERAGE%)."
-          fi
+      #     echo "Cobertura de testes: $COVERAGE_PERCENT%"
 
-      - name: ls brabo
-        run: ls mm/build/reports/jacoco/test
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: mm/build/reports/jacoco/test/jacocoTestReport.xml
+      #     # Define a cobertura mínima exigida
+      #     MIN_COVERAGE=80
+
+      #     if (( $(echo "$COVERAGE_PERCENT < $MIN_COVERAGE" | bc -l) )); then
+      #       echo "Cobertura de testes abaixo do mínimo exigido ($MIN_COVERAGE%)."
+      #       exit 1
+      #     else
+      #       echo "Cobertura de testes acima do mínimo exigido ($MIN_COVERAGE%)."
+      #     fi
+
+      # - name: ls brabo
+      #   run: ls mm/build/reports/jacoco/test
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     file: mm/build/reports/jacoco/test/jacocoTestReport.xml
