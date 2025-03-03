@@ -33,22 +33,11 @@ jobs:
       - name: Grant execute permission to gradlew
         run: chmod +x gradlew
 
-      - name: Init gradle wrapper
-        run: gradle wrapper
-
-      - name: working
-        run: pwd
-
       - name: Build and test with Gradle
         run: ./gradlew build
 
       - name: Generate JaCoCo report
         run: ./gradlew jacocoTestReport
-        
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: build/reports/jacoco/test/jacocoTestReport.xml
 
       - name: Validate test coverage
         run: |
@@ -71,3 +60,8 @@ jobs:
           else
             echo "Cobertura de testes acima do mínimo exigido ($MIN_COVERAGE%)."
           fi
+      - name: Upload JaCoCo report as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco-report
+          path: build/reports/jacoco/test/html/ 
