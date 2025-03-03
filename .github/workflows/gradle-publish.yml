@@ -27,6 +27,9 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Install xmllint
+        run: sudo apt-get install -y libxml2-utils
+
       - name: Grant execute permission to gradlew
         run: chmod +x gradlew
 
