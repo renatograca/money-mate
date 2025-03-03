@@ -33,6 +33,9 @@ jobs:
       - name: Init gradle wrapper
         run: gradle wrapper
 
+      - name: working
+        run: pwd
+
       - name: Build and test with Gradle
         run: ./gradlew build
 
