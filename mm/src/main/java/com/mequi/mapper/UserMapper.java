@@ -21,7 +21,7 @@ public interface UserMapper {
   UserDTO toUserDTO(UserEntity user);
 
   @Named("hash")
-  default String passwordHash(String password) {
+  default String passwordHash(String password) throws Exception {
     return PasswordUtils.hash(password);
   }
 }
