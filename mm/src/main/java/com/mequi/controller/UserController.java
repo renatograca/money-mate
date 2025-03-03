@@ -21,14 +21,18 @@ public class UserController implements Controller {
     final var id = Long.valueOf(context.pathParam("user_id"));
     final var userOptional = service.findById(id);
     if (userOptional.isEmpty()) {
-      context.json("Not Found").status(HttpStatus.NOT_FOUND);
+      context.status(HttpStatus.NOT_FOUND);
+      context.json("Not Found");
+    } else {
+      context.status(HttpStatus.OK);
+      context.json(userOptional.get());
     }
-    userOptional.map(user -> context.json(user).status(HttpStatus.OK));
   }
 
   public void createUser(Context context) {
     final var userContext = userContextService.build(context);
     service.create(userContext);
-    context.json("Usuario criado com sucesso.").status(HttpStatus.CREATED);
+    context.status(HttpStatus.CREATED);
+    context.json("Usuario criado com sucesso.");
   }
 }
