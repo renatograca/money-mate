@@ -44,6 +44,11 @@ jobs:
 
       - name: Generate JaCoCo report
         run: ./gradlew jacocoTestReport
+        
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: build/reports/jacoco/test/jacocoTestReport.xml
 
       - name: Validate test coverage
         run: |
@@ -66,10 +71,3 @@ jobs:
           else
             echo "Cobertura de testes acima do mínimo exigido ($MIN_COVERAGE%)."
           fi
-
-      - name: ls brabo
-        run: ls mm/build/reports/jacoco/test
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: mm/build/reports/jacoco/test/jacocoTestReport.xml
