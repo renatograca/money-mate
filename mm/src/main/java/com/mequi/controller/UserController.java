@@ -2,7 +2,7 @@ package com.mequi.controller;
 
 
 import com.google.inject.Inject;
-import com.mequi.config.context.UserContextService;
+import com.mequi.config.context.user.UserContextService;
 
 
 import com.mequi.service.user.UserService;

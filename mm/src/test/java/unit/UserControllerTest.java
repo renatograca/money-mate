@@ -3,8 +3,8 @@ package unit;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.mequi.config.context.UserContext;
-import com.mequi.config.context.UserContextService;
+import com.mequi.config.context.user.UserContext;
+import com.mequi.config.context.user.UserContextService;
 import com.mequi.controller.UserController;
 import com.mequi.service.user.UserService;
 import com.mequi.service.user.dto.UserDTO;

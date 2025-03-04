@@ -3,7 +3,7 @@ package com.mequi.service.user.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import com.mequi.config.context.UserContext;
+import com.mequi.config.context.user.UserContext;
 import com.mequi.mapper.UserMapper;
 import com.mequi.repository.user.UserRepository;
 import com.mequi.service.user.UserService;

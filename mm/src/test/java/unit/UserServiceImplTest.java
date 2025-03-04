@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mequi.config.context.UserContext;
+import com.mequi.config.context.user.UserContext;
 import com.mequi.mapper.UserMapper;
 import com.mequi.repository.user.UserRepository;
 import com.mequi.repository.user.entity.UserEntity;

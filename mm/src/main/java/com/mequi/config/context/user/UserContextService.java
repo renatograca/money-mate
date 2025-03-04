@@ -1,4 +1,4 @@
-package com.mequi.config.context;
+package com.mequi.config.context.user;
 
 import io.javalin.http.Context;
 

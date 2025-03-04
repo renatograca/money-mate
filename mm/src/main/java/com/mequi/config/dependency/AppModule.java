@@ -2,8 +2,8 @@ package com.mequi.config.dependency;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
-import com.mequi.config.context.UserContextService;
-import com.mequi.config.context.UserContextServiceImpl;
+import com.mequi.config.context.user.UserContextService;
+import com.mequi.config.context.user.UserContextServiceImpl;
 import com.mequi.config.data_base.connection.DataBaseConfig;
 import com.mequi.mapper.UserMapper;
 import com.mequi.mapper.UserMapperImpl;
