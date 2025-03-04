@@ -30,7 +30,7 @@ public class UserController implements Controller {
   }
 
   public void createUser(Context context) {
-    final var userContext = userContextService.build(context);
+    final var userContext = userContextService.apply(context);
     service.create(userContext);
     context.status(HttpStatus.CREATED);
     context.json("Usuario criado com sucesso.");

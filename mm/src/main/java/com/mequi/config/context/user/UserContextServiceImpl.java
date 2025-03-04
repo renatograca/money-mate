@@ -4,8 +4,10 @@ import io.javalin.http.Context;
 
 public class UserContextServiceImpl implements UserContextService {
   @Override
-  public UserContext build(Context context) {
-//    return UserContext.builder().build();
-    return new UserContext(context.path(), context);
+  public UserContext apply(Context context) {
+    return UserContext.builder()
+        .Path(context.path())
+        .context(context)
+        .build();
   }
 }

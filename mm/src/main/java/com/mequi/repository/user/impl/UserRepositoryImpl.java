@@ -32,9 +32,9 @@ public class UserRepositoryImpl implements UserRepository {
         final var stmt = conn.prepareStatement(query)
     ) {
       stmt.setLong(1, id);
-      final var user = stmt.executeQuery();
-      if (user.next()) {
-        return Optional.of(mapUserEntity(user));
+      final var resultSet = stmt.executeQuery();
+      if (resultSet.next()) {
+        return Optional.of(mapUserEntity(resultSet));
       }
     } catch (SQLException e) {
       log.error("Error ao encontrar o usuário {}", id);
@@ -53,9 +53,9 @@ public class UserRepositoryImpl implements UserRepository {
         final var stmt = conn.prepareStatement(query)
     ) {
       stmt.setString(1, email);
-      final var user = stmt.executeQuery();
-      if (user.next()) {
-        return Optional.of(mapUserEntity(user));
+      final var resultSet = stmt.executeQuery();
+      if (resultSet.next()) {
+        return Optional.of(mapUserEntity(resultSet));
       }
     } catch (SQLException e) {
       log.error("Error ao encontrar o usuário {}", email);

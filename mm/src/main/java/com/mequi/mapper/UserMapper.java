@@ -1,6 +1,8 @@
 package com.mequi.mapper;
 
 import com.mequi.repository.user.entity.UserEntity;
+import com.mequi.service.auth.dto.UserAuthData;
+import com.mequi.service.auth.dto.UserAuthRequest;
 import com.mequi.service.user.dto.UserDTO;
 import com.mequi.service.user.dto.UserData;
 import com.mequi.utils.PasswordUtils;
@@ -19,6 +21,9 @@ public interface UserMapper {
   UserData toUserData(UserEntity user);
 
   UserDTO toUserDTO(UserEntity user);
+
+  @Mapping(target = "password", source = "password", qualifiedByName = "hash")
+  UserAuthData toUserAuthData(UserAuthRequest user);
 
   @Named("hash")
   default String passwordHash(String password) throws Exception {
