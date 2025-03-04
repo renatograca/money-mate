@@ -26,7 +26,7 @@ public interface UserMapper {
   UserAuthData toUserAuthData(UserAuthRequest user);
 
   @Named("hash")
-  default String passwordHash(String password) throws Exception {
+  default String passwordHash(String password) {
     return PasswordUtils.hash(password);
   }
 }

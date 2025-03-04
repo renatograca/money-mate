@@ -4,8 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.mequi.service.auth.AuthService;
 import java.time.Instant;
-import java.util.Date;
-import lombok.Value;
 
 public class AuthServiceImpl implements AuthService {
 

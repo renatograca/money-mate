@@ -3,7 +3,6 @@ package com.mequi.config.routes;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.mequi.routes.AuthRoutes;
-import com.mequi.routes.Routers;
 import com.mequi.routes.UserRoutes;
 import io.javalin.Javalin;
 import java.util.List;
