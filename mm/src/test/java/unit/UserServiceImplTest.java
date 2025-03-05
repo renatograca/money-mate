@@ -1,5 +1,6 @@
 package unit;
 
+import com.mequi.exceptions.dto.UserNotFoundException;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -88,7 +89,7 @@ public class UserServiceImplTest {
   }
 
   @Test
-  void testFindById() {
+  void testFindById() throws UserNotFoundException {
     // Arrange
     when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
     when(userMapper.toUserDTO(userEntity)).thenReturn(userDTO);
@@ -104,7 +105,7 @@ public class UserServiceImplTest {
   }
 
   @Test
-  void testFindByIdNotFound() {
+  void testFindByIdNotFound() throws UserNotFoundException {
     // Arrange
     when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -118,7 +119,7 @@ public class UserServiceImplTest {
   }
 
   @Test
-  void testCreateUser() throws JsonProcessingException {
+  void testCreateUser() throws JsonProcessingException, UserNotFoundException {
     // Arrange
     when(mapper.readValue(userContext.context().body(), UserData.class)).thenReturn(userData);
     when(userRepository.findByEmail(userData.email())).thenReturn(Optional.empty());
@@ -135,7 +136,7 @@ public class UserServiceImplTest {
   }
 
   @Test
-  void testCreateUserThrowsExceptionWhenEmailAlreadyRegistered() throws JsonProcessingException {
+  void testCreateUserThrowsExceptionWhenEmailAlreadyRegistered() throws JsonProcessingException, UserNotFoundException {
     // Arrange
     when(mapper.readValue(userContext.context().body(), UserData.class)).thenReturn(userData);
     when(userRepository.findByEmail(userData.email())).thenReturn(Optional.of(userEntity));
@@ -151,7 +152,7 @@ public class UserServiceImplTest {
   }
 
   @Test
-  void testCreateUserThrowsExceptionWhenJsonProcessingFails() throws JsonProcessingException {
+  void testCreateUserThrowsExceptionWhenJsonProcessingFails() throws JsonProcessingException, UserNotFoundException {
     // Arrange
     when(mapper.readValue(userContext.context().body(), UserData.class))
         .thenThrow(new JsonProcessingException("Invalid JSON") {});

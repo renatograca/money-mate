@@ -1,22 +1,19 @@
 package com.mequi.config.routes;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.mequi.routes.AuthRoutes;
-import com.mequi.routes.UserRoutes;
+import com.google.inject.Singleton;
+import com.mequi.routes.Routers;
 import io.javalin.Javalin;
-import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 
+@Singleton
 @RequiredArgsConstructor(onConstructor_ = @__(@Inject))
 public class RouterConfig {
 
-  private final Injector injector;
+  private final Set<Routers> routes;
 
   public void configureRouters(Javalin app) {
-    final var userRouters = injector.getInstance(UserRoutes.class);
-    final var authRouters = injector.getInstance(AuthRoutes.class);
-    final var routes = List.of(userRouters, authRouters);
     routes.forEach(router -> router.addRoutes(app));
   }
 }

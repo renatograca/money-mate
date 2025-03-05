@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.mequi.config.context.user.UserContext;
+import com.mequi.exceptions.dto.UserNotFoundException;
 import com.mequi.mapper.UserMapper;
 import com.mequi.repository.user.UserRepository;
+import com.mequi.repository.user.entity.UserEntity;
 import com.mequi.service.user.UserService;
 import com.mequi.service.user.dto.UserDTO;
 import com.mequi.service.user.dto.UserData;
@@ -22,7 +24,12 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
 
   @Override
-  public Optional<UserDTO> findById(Long id) {
+  public Optional<UserEntity> getUserEntityById(Long id) throws UserNotFoundException {
+    return userRepository.findById(id);
+  }
+
+  @Override
+  public Optional<UserDTO> findById(Long id) throws UserNotFoundException {
      final var userEntity = userRepository.findById(id);
      return userEntity.map(userMapper::toUserDTO);
   }
@@ -40,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
       final var userEntity = userMapper.toUserEntity(userData);
       userRepository.create(userEntity);
-    } catch (JsonProcessingException e) {
+    } catch (JsonProcessingException | UserNotFoundException e) {
       System.out.println("Error when read value json");
       log.error("Error when read value json: {}", e.getMessage());
     }

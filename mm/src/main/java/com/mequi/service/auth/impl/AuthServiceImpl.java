@@ -2,9 +2,14 @@ package com.mequi.service.auth.impl;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.mequi.service.auth.AuthService;
 import java.time.Instant;
+import lombok.RequiredArgsConstructor;
 
+@Singleton
+@RequiredArgsConstructor(onConstructor_ = @__(@Inject))
 public class AuthServiceImpl implements AuthService {
 
   private static final String SECRET = System.getenv("jwt_secret");

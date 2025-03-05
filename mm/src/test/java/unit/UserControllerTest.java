@@ -1,5 +1,6 @@
 package unit;
 
+import com.mequi.exceptions.dto.UserNotFoundException;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +37,7 @@ class UserControllerTest {
     MockitoAnnotations.openMocks(this); // Inicializa os mocks
   }
   @Test
-  public void testGetUser_UserFound() {
+  public void testGetUser_UserFound() throws UserNotFoundException {
     // Arrange
     Long userId = 1L;
     final var name = "John Doe";
@@ -55,7 +56,7 @@ class UserControllerTest {
   }
 
   @Test
-  void testGetUser_UserNotFound() {
+  void testGetUser_UserNotFound() throws UserNotFoundException {
     // Arrange
     Long userId = 1L;
     when(context.pathParam("user_id")).thenReturn(userId.toString());
@@ -73,7 +74,7 @@ class UserControllerTest {
   void testCreateUser() {
     // Arrange
     final var userContext = new UserContext("/users", context);
-    when(userContextService.build(context)).thenReturn(userContext);
+    when(userContextService.apply(context)).thenReturn(userContext);
 
     // Act
     userController.createUser(context);

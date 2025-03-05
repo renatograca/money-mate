@@ -1,5 +1,7 @@
 package com.mequi.utils;
 
+import com.mequi.config.context.auth.dto.AuthContext;
+import com.mequi.repository.user.entity.UserEntity;
 import org.eclipse.jetty.util.StringUtil;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -19,7 +21,8 @@ public final class PasswordUtils {
     return BCrypt.checkpw(password, passwordHash);
   }
 
-  public static void main(String[] args) throws IllegalArgumentException {
-    System.out.println(hash(" "));
+  public static boolean verifyLogin(AuthContext authContext, UserEntity user) {
+    return verifyPassword(authContext.user().password(), user.passwordHash());
   }
+
 }
