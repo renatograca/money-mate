@@ -10,7 +10,7 @@ public record UserEntity(
     Long id,
     String fullName,
     String email,
-    String password,
+    String passwordHash,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     Date dateOfBirth,
     Long phone,

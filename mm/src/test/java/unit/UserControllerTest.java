@@ -1,13 +1,17 @@
 package unit;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mequi.exceptions.ApiException;
+import com.mequi.exceptions.UserNotFoundException;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.mequi.config.context.UserContext;
-import com.mequi.config.context.UserContextService;
+import com.mequi.config.context.user.UserContext;
+import com.mequi.config.context.user.UserContextService;
 import com.mequi.controller.UserController;
 import com.mequi.service.user.UserService;
 import com.mequi.service.user.dto.UserDTO;
+import java.sql.SQLException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -36,7 +40,7 @@ class UserControllerTest {
     MockitoAnnotations.openMocks(this); // Inicializa os mocks
   }
   @Test
-  public void testGetUser_UserFound() {
+  public void testGetUser_UserFound() throws UserNotFoundException {
     // Arrange
     Long userId = 1L;
     final var name = "John Doe";
@@ -55,25 +59,10 @@ class UserControllerTest {
   }
 
   @Test
-  void testGetUser_UserNotFound() {
-    // Arrange
-    Long userId = 1L;
-    when(context.pathParam("user_id")).thenReturn(userId.toString());
-    when(service.findById(userId)).thenReturn(Optional.empty());
-
-    // Act
-    userController.getUser(context);
-
-    // Assert
-    verify(context).json("Not Found");
-    verify(context).status(HttpStatus.NOT_FOUND);
-  }
-
-  @Test
-  void testCreateUser() {
+  void testCreateUser() throws SQLException, JsonProcessingException, ApiException {
     // Arrange
     final var userContext = new UserContext("/users", context);
-    when(userContextService.build(context)).thenReturn(userContext);
+    when(userContextService.apply(context)).thenReturn(userContext);
 
     // Act
     userController.createUser(context);

@@ -1,14 +1,15 @@
 package com.mequi.routes;
 
 import com.google.inject.Inject;
+import static com.mequi.config.routes.ResourceConfig.UserPaths.GET_USER_PATH;
+import static com.mequi.config.routes.ResourceConfig.UserPaths.ROOT_PATH;
 import com.mequi.controller.UserController;
 import io.javalin.Javalin;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(onConstructor=@__(@Inject))
 public class UserRoutes implements Routers {
-  private static final String ROOT_PATH = "/users";
-  private static final String GET_USER_PATH = ROOT_PATH + "/{user_id}";
+
 
   private final UserController userController;
 

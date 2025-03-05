@@ -1,6 +1,7 @@
 package unit;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import com.mequi.exceptions.ApiException;
+import com.mequi.exceptions.UserNotFoundException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -13,7 +14,7 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mequi.config.context.UserContext;
+import com.mequi.config.context.user.UserContext;
 import com.mequi.mapper.UserMapper;
 import com.mequi.repository.user.UserRepository;
 import com.mequi.repository.user.entity.UserEntity;
@@ -22,6 +23,7 @@ import com.mequi.service.user.dto.UserDTO;
 import com.mequi.service.user.dto.UserData;
 import com.mequi.service.user.impl.UserServiceImpl;
 import io.javalin.http.Context;
+import java.sql.SQLException;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -88,7 +90,7 @@ public class UserServiceImplTest {
   }
 
   @Test
-  void testFindById() {
+  void testFindById() throws UserNotFoundException {
     // Arrange
     when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
     when(userMapper.toUserDTO(userEntity)).thenReturn(userDTO);
@@ -104,7 +106,7 @@ public class UserServiceImplTest {
   }
 
   @Test
-  void testFindByIdNotFound() {
+  void testFindByIdNotFound() throws UserNotFoundException {
     // Arrange
     when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -118,7 +120,7 @@ public class UserServiceImplTest {
   }
 
   @Test
-  void testCreateUser() throws JsonProcessingException {
+  void testCreateUser() throws JsonProcessingException, SQLException, ApiException {
     // Arrange
     when(mapper.readValue(userContext.context().body(), UserData.class)).thenReturn(userData);
     when(userRepository.findByEmail(userData.email())).thenReturn(Optional.empty());
@@ -135,13 +137,13 @@ public class UserServiceImplTest {
   }
 
   @Test
-  void testCreateUserThrowsExceptionWhenEmailAlreadyRegistered() throws JsonProcessingException {
+  void testCreateUserThrowsExceptionWhenEmailAlreadyRegistered() throws JsonProcessingException, SQLException {
     // Arrange
     when(mapper.readValue(userContext.context().body(), UserData.class)).thenReturn(userData);
     when(userRepository.findByEmail(userData.email())).thenReturn(Optional.of(userEntity));
 
     // Act & Assert
-    RuntimeException exception = assertThrows(RuntimeException.class, () -> userService.create(userContext));
+    ApiException exception = assertThrows(ApiException.class, () -> userService.create(userContext));
 
     verify(mapper, times(1)).readValue(userContext.context().body(), UserData.class);
     verify(userRepository, times(1)).findByEmail(userData.email());
@@ -151,17 +153,45 @@ public class UserServiceImplTest {
   }
 
   @Test
-  void testCreateUserThrowsExceptionWhenJsonProcessingFails() throws JsonProcessingException {
+  void testCreateUserThrowsExceptionWhenJsonProcessingFails() throws JsonProcessingException, SQLException {
     // Arrange
     when(mapper.readValue(userContext.context().body(), UserData.class))
         .thenThrow(new JsonProcessingException("Invalid JSON") {});
 
     // Act & Assert
-    assertDoesNotThrow(() -> userService.create(userContext)); // O método captura a exceção e loga, mas não a relança
+    assertThrows(JsonProcessingException.class, () ->  userService.create(userContext));
 
     verify(mapper, times(1)).readValue(userContext.context().body(), UserData.class);
     verify(userRepository, never()).findByEmail(any());
     verify(userMapper, never()).toUserEntity(any());
     verify(userRepository, never()).create(any());
+  }
+
+
+  @Test
+  void testGetUserEntityById() throws UserNotFoundException {
+    // Arrange
+    when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
+
+    // Act
+    final var result = userService.getUserEntityById(1L);
+
+    // Assert
+    verify(userRepository, times(1)).findById(1L);
+    assertTrue(result.isPresent());
+    assertEquals(userEntity, result.get());
+  }
+
+  @Test
+  void testGetUserEntityByIdNotFound() throws UserNotFoundException {
+    // Arrange
+    when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+    // Act
+    final var result = userService.getUserEntityById(1L);
+
+    // Assert
+    verify(userRepository, times(1)).findById(1L);
+    assertFalse(result.isPresent());
   }
 }

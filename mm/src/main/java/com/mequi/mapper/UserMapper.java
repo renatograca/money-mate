@@ -12,7 +12,7 @@ import org.mapstruct.Named;
 public interface UserMapper {
 
   @Mapping(target = "id", ignore = true)
-  @Mapping(target = "password", source = "password", qualifiedByName = "hash")
+  @Mapping(target = "passwordHash", source = "password", qualifiedByName = "hash")
   UserEntity toUserEntity(UserData userData);
 
   @Mapping(target = "password", ignore = true)
@@ -21,7 +21,7 @@ public interface UserMapper {
   UserDTO toUserDTO(UserEntity user);
 
   @Named("hash")
-  default String passwordHash(String password) throws Exception {
+  default String passwordHash(String password) {
     return PasswordUtils.hash(password);
   }
 }
