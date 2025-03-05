@@ -1,7 +1,8 @@
 package com.mequi.routes;
 
-import com.google.inject.Inject;
 import static com.mequi.config.routes.ResourceConfig.AuthPaths.ROOT_PATH;
+
+import com.google.inject.Inject;
 import com.mequi.controller.AuthController;
 import io.javalin.Javalin;
 import lombok.RequiredArgsConstructor;

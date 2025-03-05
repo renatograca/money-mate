@@ -165,4 +165,32 @@ public class UserServiceImplTest {
     verify(userMapper, never()).toUserEntity(any());
     verify(userRepository, never()).create(any());
   }
+
+
+  @Test
+  void testGetUserEntityById() throws UserNotFoundException {
+    // Arrange
+    when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
+
+    // Act
+    final var result = userService.getUserEntityById(1L);
+
+    // Assert
+    verify(userRepository, times(1)).findById(1L);
+    assertTrue(result.isPresent());
+    assertEquals(userEntity, result.get());
+  }
+
+  @Test
+  void testGetUserEntityByIdNotFound() throws UserNotFoundException {
+    // Arrange
+    when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+    // Act
+    final var result = userService.getUserEntityById(1L);
+
+    // Assert
+    verify(userRepository, times(1)).findById(1L);
+    assertFalse(result.isPresent());
+  }
 }

@@ -57,6 +57,7 @@ public class UserRepositoryImplTest {
     when(resultSet.next()).thenReturn(true);
     when(resultSet.getLong("id")).thenReturn(userId);
     when(resultSet.getString("full_name")).thenReturn("John Doe");
+    when(resultSet.getString("password_hash")).thenReturn("hashPassword");
     when(resultSet.getString("email")).thenReturn("john.doe@example.com");
     when(resultSet.getDate("date_of_birth")).thenReturn(java.sql.Date.valueOf("1990-01-01"));
     when(resultSet.getLong("phone")).thenReturn(1234567890L);
@@ -97,6 +98,7 @@ public class UserRepositoryImplTest {
     when(resultSet.next()).thenReturn(true);
     when(resultSet.getLong("id")).thenReturn(1L);
     when(resultSet.getString("full_name")).thenReturn("John Doe");
+    when(resultSet.getString("password_hash")).thenReturn("hashPassword");
     when(resultSet.getString("email")).thenReturn(email);
     when(resultSet.getDate("date_of_birth")).thenReturn(java.sql.Date.valueOf("1990-01-01"));
     when(resultSet.getLong("phone")).thenReturn(1234567890L);

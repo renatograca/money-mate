@@ -56,21 +56,6 @@ class UserControllerTest {
   }
 
   @Test
-  void testGetUser_UserNotFound() throws UserNotFoundException {
-    // Arrange
-    Long userId = 1L;
-    when(context.pathParam("user_id")).thenReturn(userId.toString());
-    when(service.findById(userId)).thenReturn(Optional.empty());
-
-    // Act
-    userController.getUser(context);
-
-    // Assert
-    verify(context).json("Not Found");
-    verify(context).status(HttpStatus.NOT_FOUND);
-  }
-
-  @Test
   void testCreateUser() {
     // Arrange
     final var userContext = new UserContext("/users", context);
