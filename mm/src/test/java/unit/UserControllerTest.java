@@ -1,6 +1,8 @@
 package unit;
 
-import com.mequi.exceptions.dto.UserNotFoundException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mequi.exceptions.ApiException;
+import com.mequi.exceptions.UserNotFoundException;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -9,6 +11,7 @@ import com.mequi.config.context.user.UserContextService;
 import com.mequi.controller.UserController;
 import com.mequi.service.user.UserService;
 import com.mequi.service.user.dto.UserDTO;
+import java.sql.SQLException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -56,7 +59,7 @@ class UserControllerTest {
   }
 
   @Test
-  void testCreateUser() {
+  void testCreateUser() throws SQLException, JsonProcessingException, ApiException {
     // Arrange
     final var userContext = new UserContext("/users", context);
     when(userContextService.apply(context)).thenReturn(userContext);

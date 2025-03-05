@@ -1,7 +1,7 @@
 package com.mequi.repository.user.impl;
 
 import com.google.inject.Inject;
-import com.mequi.exceptions.dto.UserNotFoundException;
+import com.mequi.exceptions.UserNotFoundException;
 import com.mequi.repository.user.UserRepository;
 import com.mequi.repository.user.entity.UserEntity;
 import com.mequi.service.user.dto.StatusAccount;
@@ -45,7 +45,7 @@ public class UserRepositoryImpl implements UserRepository {
   }
 
   @Override
-  public Optional<UserEntity> findByEmail(String email) throws UserNotFoundException {
+  public Optional<UserEntity> findByEmail(String email) {
     final var data = buildDataString(FULL_NAME, EMAIL, DATE_OF_BIRTH, PHONE, ACCOUNT_STATUS);
 
     final var query = "SELECT " + data + " FROM users WHERE email = ?";
@@ -58,15 +58,13 @@ public class UserRepositoryImpl implements UserRepository {
       if (resultSet.next()) {
         return Optional.of(mapUserEntity(resultSet));
       }
-    } catch (SQLException e) {
-      log.error("Error ao encontrar o usuário {}", email);
-      throw new UserNotFoundException("Error find user");
+    } catch (SQLException ignored) {
     }
     return Optional.empty();
   }
 
   @Override
-  public void create(UserEntity userData) {
+  public void create(UserEntity userData) throws SQLException {
     final var data = "("
         + buildDataString(FULL_NAME, PASSWORD_HASH, EMAIL, DATE_OF_BIRTH, PHONE, ACCOUNT_STATUS)
         + ")";
@@ -84,7 +82,7 @@ public class UserRepositoryImpl implements UserRepository {
       stmt.executeUpdate();
     } catch (SQLException e) {
       log.error("Erro ao criar usuario");
-      throw new RuntimeException("Error when create user");
+      throw e;
     }
   }
 

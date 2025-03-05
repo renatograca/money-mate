@@ -1,6 +1,7 @@
 package unit;
 
-import com.mequi.exceptions.dto.UserNotFoundException;
+import com.mequi.exceptions.ApiException;
+import com.mequi.exceptions.UserNotFoundException;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -23,6 +24,7 @@ import com.mequi.service.user.dto.UserDTO;
 import com.mequi.service.user.dto.UserData;
 import com.mequi.service.user.impl.UserServiceImpl;
 import io.javalin.http.Context;
+import java.sql.SQLException;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -119,7 +121,7 @@ public class UserServiceImplTest {
   }
 
   @Test
-  void testCreateUser() throws JsonProcessingException, UserNotFoundException {
+  void testCreateUser() throws JsonProcessingException, SQLException, ApiException {
     // Arrange
     when(mapper.readValue(userContext.context().body(), UserData.class)).thenReturn(userData);
     when(userRepository.findByEmail(userData.email())).thenReturn(Optional.empty());
@@ -136,7 +138,7 @@ public class UserServiceImplTest {
   }
 
   @Test
-  void testCreateUserThrowsExceptionWhenEmailAlreadyRegistered() throws JsonProcessingException, UserNotFoundException {
+  void testCreateUserThrowsExceptionWhenEmailAlreadyRegistered() throws JsonProcessingException, SQLException {
     // Arrange
     when(mapper.readValue(userContext.context().body(), UserData.class)).thenReturn(userData);
     when(userRepository.findByEmail(userData.email())).thenReturn(Optional.of(userEntity));
@@ -152,13 +154,13 @@ public class UserServiceImplTest {
   }
 
   @Test
-  void testCreateUserThrowsExceptionWhenJsonProcessingFails() throws JsonProcessingException, UserNotFoundException {
+  void testCreateUserThrowsExceptionWhenJsonProcessingFails() throws JsonProcessingException, SQLException {
     // Arrange
     when(mapper.readValue(userContext.context().body(), UserData.class))
         .thenThrow(new JsonProcessingException("Invalid JSON") {});
 
     // Act & Assert
-    assertDoesNotThrow(() -> userService.create(userContext)); // O método captura a exceção e loga, mas não a relança
+    assertDoesNotThrow(() -> userService.create(userContext));
 
     verify(mapper, times(1)).readValue(userContext.context().body(), UserData.class);
     verify(userRepository, never()).findByEmail(any());

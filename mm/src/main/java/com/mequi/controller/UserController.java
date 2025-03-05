@@ -1,15 +1,18 @@
 package com.mequi.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mequi.config.context.user.UserContextService;
 
 
-import com.mequi.exceptions.dto.UserNotFoundException;
+import com.mequi.exceptions.ApiException;
+import com.mequi.exceptions.UserNotFoundException;
 import com.mequi.service.user.UserService;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
+import java.sql.SQLException;
 import lombok.RequiredArgsConstructor;
 
 @Singleton
@@ -30,7 +33,7 @@ public class UserController implements Controller {
     context.json(userOptional.get());
   }
 
-  public void createUser(Context context) {
+  public void createUser(Context context) throws ApiException, SQLException, JsonProcessingException {
     final var userContext = userContextService.apply(context);
     service.create(userContext);
     context.status(HttpStatus.CREATED);

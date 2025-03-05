@@ -9,7 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.mequi.exceptions.dto.UserNotFoundException;
+import com.mequi.exceptions.UserNotFoundException;
 import com.mequi.repository.user.entity.UserEntity;
 import com.mequi.repository.user.impl.UserRepositoryImpl;
 import com.mequi.service.user.dto.StatusAccount;
@@ -91,7 +91,7 @@ public class UserRepositoryImplTest {
   }
 
   @Test
-  void testFindByEmail() throws SQLException, UserNotFoundException {
+  void testFindByEmail() throws SQLException {
     // Arrange
     String email = "john.doe@example.com";
     when(preparedStatement.executeQuery()).thenReturn(resultSet);

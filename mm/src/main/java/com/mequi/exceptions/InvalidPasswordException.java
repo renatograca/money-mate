@@ -1,4 +1,4 @@
-package com.mequi.exceptions.dto;
+package com.mequi.exceptions;
 
 public class InvalidPasswordException extends Exception {
   public InvalidPasswordException(String message) {

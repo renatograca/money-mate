@@ -1,4 +1,4 @@
-package com.mequi.exceptions.dto;
+package com.mequi.exceptions;
 
 import lombok.Builder;
 
