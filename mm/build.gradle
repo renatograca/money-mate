@@ -64,7 +64,8 @@ jacocoTestReport {
                     'com/mequi/mapper/*',
                     'com/mequi/routes/*',
                     'com/mequi/**/dto/*',
-                    'com/mequi/Main.class'
+                    'com/mequi/Main.class',
+                    'com/mequi/exceptions/*'
             ])
         }))
     }

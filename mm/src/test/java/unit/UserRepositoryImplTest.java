@@ -154,7 +154,7 @@ public class UserRepositoryImplTest {
     when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Database error"));
 
     // Act & Assert
-    RuntimeException exception = assertThrows(RuntimeException.class, () -> userRepository.create(userData));
-    assertEquals("Error when create user", exception.getMessage());
+    SQLException exception = assertThrows(SQLException.class, () -> userRepository.create(userData));
+    assertEquals("Database error", exception.getMessage());
   }
 }

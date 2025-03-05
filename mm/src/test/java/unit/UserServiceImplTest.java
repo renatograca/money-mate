@@ -2,7 +2,6 @@ package unit;
 
 import com.mequi.exceptions.ApiException;
 import com.mequi.exceptions.UserNotFoundException;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -144,7 +143,7 @@ public class UserServiceImplTest {
     when(userRepository.findByEmail(userData.email())).thenReturn(Optional.of(userEntity));
 
     // Act & Assert
-    RuntimeException exception = assertThrows(RuntimeException.class, () -> userService.create(userContext));
+    ApiException exception = assertThrows(ApiException.class, () -> userService.create(userContext));
 
     verify(mapper, times(1)).readValue(userContext.context().body(), UserData.class);
     verify(userRepository, times(1)).findByEmail(userData.email());
@@ -160,7 +159,7 @@ public class UserServiceImplTest {
         .thenThrow(new JsonProcessingException("Invalid JSON") {});
 
     // Act & Assert
-    assertDoesNotThrow(() -> userService.create(userContext));
+    assertThrows(JsonProcessingException.class, () ->  userService.create(userContext));
 
     verify(mapper, times(1)).readValue(userContext.context().body(), UserData.class);
     verify(userRepository, never()).findByEmail(any());
