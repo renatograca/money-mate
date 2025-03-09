@@ -13,5 +13,5 @@ public record UserData(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     Date dateOfBirth,
     long phone,
-    StatusAccount accountStatus
+    AccountStatus accountStatus
 ) {}

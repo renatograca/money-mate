@@ -6,11 +6,12 @@ import lombok.Builder;
 
 @Builder
 public record UserDTO(
+    Long id,
     String fullName,
     String email,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     Date dateOfBirth,
-    long phone,
-    StatusAccount accountStatus
+    Long phone,
+    AccountStatus accountStatus
 ) {
 }
