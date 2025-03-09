@@ -1,6 +1,6 @@
 package com.mequi.service.user.dto;
 
-public enum StatusAccount {
+public enum AccountStatus {
   ACTIVE,
   INACTIVE,
   DELETED
