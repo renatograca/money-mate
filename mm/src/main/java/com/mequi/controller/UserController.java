@@ -35,8 +35,21 @@ public class UserController implements Controller {
 
   public void createUser(Context context) throws ApiException, SQLException, JsonProcessingException {
     final var userContext = userContextService.apply(context);
-    service.create(userContext);
+    final var newUser = service.create(userContext);
     context.status(HttpStatus.CREATED);
-    context.json("Usuario criado com sucesso.");
+    context.json(newUser);
+  }
+
+  public void updateUser(Context context) throws ApiException, SQLException, JsonProcessingException {
+    final var userContext = userContextService.apply(context);
+    service.update(userContext);
+    context.status(HttpStatus.OK);
+    context.json("{\"message\": \"updated user\"}");
+  }
+
+  public void deleteUser(Context context) throws ApiException, SQLException, JsonProcessingException {
+    final var userContext = userContextService.apply(context);
+    service.delete(userContext);
+    context.status(HttpStatus.NO_CONTENT);
   }
 }
