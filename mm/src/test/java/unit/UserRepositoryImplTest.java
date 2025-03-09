@@ -1,24 +1,29 @@
 package unit;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.mequi.exceptions.UserNotFoundException;
 import com.mequi.repository.user.entity.UserEntity;
 import com.mequi.repository.user.impl.UserRepositoryImpl;
 import com.mequi.service.user.dto.StatusAccount;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class UserRepositoryImplTest {
@@ -45,13 +50,14 @@ public class UserRepositoryImplTest {
   }
 
   @Test
-  void testFindById() throws SQLException {
+  void testFindById() throws SQLException, UserNotFoundException {
     // Arrange
     final var userId = 1L;
     when(preparedStatement.executeQuery()).thenReturn(resultSet);
     when(resultSet.next()).thenReturn(true);
     when(resultSet.getLong("id")).thenReturn(userId);
     when(resultSet.getString("full_name")).thenReturn("John Doe");
+    when(resultSet.getString("password_hash")).thenReturn("hashPassword");
     when(resultSet.getString("email")).thenReturn("john.doe@example.com");
     when(resultSet.getDate("date_of_birth")).thenReturn(java.sql.Date.valueOf("1990-01-01"));
     when(resultSet.getLong("phone")).thenReturn(1234567890L);
@@ -71,7 +77,7 @@ public class UserRepositoryImplTest {
   }
 
   @Test
-  void testFindByIdNotFound() throws SQLException {
+  void testFindByIdNotFound() throws SQLException, UserNotFoundException {
     // Arrange
     final var userId = 1L;
     when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -92,6 +98,7 @@ public class UserRepositoryImplTest {
     when(resultSet.next()).thenReturn(true);
     when(resultSet.getLong("id")).thenReturn(1L);
     when(resultSet.getString("full_name")).thenReturn("John Doe");
+    when(resultSet.getString("password_hash")).thenReturn("hashPassword");
     when(resultSet.getString("email")).thenReturn(email);
     when(resultSet.getDate("date_of_birth")).thenReturn(java.sql.Date.valueOf("1990-01-01"));
     when(resultSet.getLong("phone")).thenReturn(1234567890L);
@@ -110,7 +117,7 @@ public class UserRepositoryImplTest {
     // Arrange
     UserEntity userData = UserEntity.builder()
         .fullName("John Doe")
-        .password("password123")
+        .passwordHash("password123")
         .email("john.doe@example.com")
         .dateOfBirth(java.sql.Date.valueOf("1990-01-01"))
         .phone(1234567890L)
@@ -137,7 +144,7 @@ public class UserRepositoryImplTest {
     // Arrange
     final var userData = UserEntity.builder()
         .fullName("John Doe")
-        .password("password123")
+        .passwordHash("password123")
         .email("john.doe@example.com")
         .dateOfBirth(java.sql.Date.valueOf("1990-01-01"))
         .phone(1234567890L)
@@ -147,7 +154,7 @@ public class UserRepositoryImplTest {
     when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Database error"));
 
     // Act & Assert
-    RuntimeException exception = assertThrows(RuntimeException.class, () -> userRepository.create(userData));
-    assertEquals("Error when create user", exception.getMessage());
+    SQLException exception = assertThrows(SQLException.class, () -> userRepository.create(userData));
+    assertEquals("Database error", exception.getMessage());
   }
 }

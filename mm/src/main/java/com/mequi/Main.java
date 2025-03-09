@@ -4,8 +4,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.mequi.config.dependency.AppModule;
 import com.mequi.config.dependency.ObjectMapperConfig;
+import com.mequi.config.routes.RouterConfig;
 import com.mequi.config.server.JavalinConfig;
-import com.mequi.routes.UserRoutes;
 import io.javalin.Javalin;
 
 
@@ -20,8 +20,8 @@ public class Main {
   }
 
   private static void routerConfig(Javalin app, Injector injector) {
-    final var userRouters = injector.getInstance(UserRoutes.class);
-    userRouters.addRoutes(app);
+    final var routerInitializer = injector.getInstance(RouterConfig.class);
+    routerInitializer.configureRouters(app);
   }
 
   private static Injector injectConfig() {
