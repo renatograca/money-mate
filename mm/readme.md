@@ -1,4 +1,4 @@
 Env to run project
 ``` bash
-db_url=jdbc:postgresql://localhost:5432/user_db;db_user=mequi;db_pass=mequi;jwt_secret=secret 
+db_url=jdbc:postgresql://localhost:5432/<db_name>;db_user=<user>>;db_pass=<password>;jwt_secret=<secret> 
 ```
