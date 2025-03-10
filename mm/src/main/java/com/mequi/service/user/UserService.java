@@ -12,5 +12,7 @@ import java.util.Optional;
 public interface UserService {
   Optional<UserEntity> getUserEntityById(Long id) throws UserNotFoundException;
   Optional<UserDTO> findById(Long id) throws UserNotFoundException;
-  void create(UserContext context) throws ApiException, JsonProcessingException, SQLException;
+  UserDTO create(UserContext context) throws ApiException, JsonProcessingException, SQLException;
+  void update(UserContext context) throws SQLException, JsonProcessingException, ApiException;
+  void delete(UserContext context) throws SQLException, ApiException;
 }

@@ -15,6 +15,9 @@ public interface UserMapper {
   @Mapping(target = "passwordHash", source = "password", qualifiedByName = "hash")
   UserEntity toUserEntity(UserData userData);
 
+  @Mapping(target = "passwordHash", ignore = true)
+  UserEntity toUserEntity(UserDTO userData);
+
   @Mapping(target = "password", ignore = true)
   UserData toUserData(UserEntity user);
 

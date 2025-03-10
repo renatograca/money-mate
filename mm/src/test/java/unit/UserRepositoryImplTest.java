@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,7 +13,7 @@ import static org.mockito.Mockito.when;
 import com.mequi.exceptions.UserNotFoundException;
 import com.mequi.repository.user.entity.UserEntity;
 import com.mequi.repository.user.impl.UserRepositoryImpl;
-import com.mequi.service.user.dto.StatusAccount;
+import com.mequi.service.user.dto.AccountStatus;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -73,7 +74,7 @@ public class UserRepositoryImplTest {
     assertEquals("john.doe@example.com", user.get().email());
     assertEquals(java.sql.Date.valueOf("1990-01-01"), user.get().dateOfBirth());
     assertEquals(1234567890L, user.get().phone());
-    assertEquals(StatusAccount.ACTIVE, user.get().accountStatus());
+    assertEquals(AccountStatus.ACTIVE, user.get().accountStatus());
   }
 
   @Test
@@ -115,16 +116,19 @@ public class UserRepositoryImplTest {
   @Test
   void testCreateUser() throws SQLException {
     // Arrange
-    UserEntity userData = UserEntity.builder()
+    final var userData = UserEntity.builder()
+        .id(1L)
         .fullName("John Doe")
         .passwordHash("password123")
         .email("john.doe@example.com")
         .dateOfBirth(java.sql.Date.valueOf("1990-01-01"))
         .phone(1234567890L)
-        .accountStatus(StatusAccount.ACTIVE)
+        .accountStatus(AccountStatus.ACTIVE)
         .build();
 
-    when(preparedStatement.executeUpdate()).thenReturn(1);
+    final var resultSetMock = mock(ResultSet.class);
+
+    when(preparedStatement.executeQuery()).thenReturn(resultSetMock);
 
     // Act
     userRepository.create(userData);
@@ -136,25 +140,86 @@ public class UserRepositoryImplTest {
     verify(preparedStatement, times(1)).setDate(4, java.sql.Date.valueOf("1990-01-01"));
     verify(preparedStatement, times(1)).setLong(5, 1234567890L);
     verify(preparedStatement, times(1)).setString(6, "ACTIVE");
-    verify(preparedStatement, times(1)).executeUpdate();
+    verify(preparedStatement, times(1)).executeQuery();
   }
 
   @Test
   void testCreateUserThrowsException() throws SQLException {
     // Arrange
     final var userData = UserEntity.builder()
+        .id(1L)
         .fullName("John Doe")
         .passwordHash("password123")
         .email("john.doe@example.com")
         .dateOfBirth(java.sql.Date.valueOf("1990-01-01"))
         .phone(1234567890L)
-        .accountStatus(StatusAccount.ACTIVE)
+        .accountStatus(AccountStatus.ACTIVE)
+        .build();
+
+    when(preparedStatement.executeQuery()).thenThrow(new SQLException("Database error"));
+
+    // Act & Assert
+    SQLException exception = assertThrows(SQLException.class, () -> userRepository.create(userData));
+    assertEquals("Database error", exception.getMessage());
+  }
+
+  @Test
+  void testUpdateUser() throws SQLException {
+    // Arrange
+    final var userData = UserEntity.builder()
+        .id(1L)
+        .fullName("John Doe Updated")
+        .email("john.doe.updated@example.com")
+        .dateOfBirth(java.sql.Date.valueOf("1990-01-01"))
+        .phone(9876543210L)
+        .build();
+
+    // Act
+    userRepository.update(userData);
+
+    // Assert
+    verify(preparedStatement, times(1)).executeUpdate();
+  }
+
+  @Test
+  void testUpdateUserThrowsException() throws SQLException {
+    // Arrange
+    final var userData = UserEntity.builder()
+        .id(1L)
+        .fullName("John Doe Updated")
+        .email("john.doe.updated@example.com")
+        .dateOfBirth(java.sql.Date.valueOf("1990-01-01"))
+        .phone(9876543210L)
         .build();
 
     when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Database error"));
 
     // Act & Assert
-    SQLException exception = assertThrows(SQLException.class, () -> userRepository.create(userData));
+    SQLException exception = assertThrows(SQLException.class, () -> userRepository.update(userData));
+    assertEquals("Database error", exception.getMessage());
+  }
+
+  @Test
+  void testDeleteUser() throws SQLException {
+    // Arrange
+    final var userId = 1L;
+
+    // Act
+    userRepository.delete(userId);
+
+    // Assert
+    verify(preparedStatement, times(1)).executeUpdate();
+  }
+
+  @Test
+  void testDeleteUserThrowsException() throws SQLException {
+    // Arrange
+    final var userId = 1L;
+
+    when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Database error"));
+
+    // Act & Assert
+    SQLException exception = assertThrows(SQLException.class, () -> userRepository.delete(userId));
     assertEquals("Database error", exception.getMessage());
   }
 }
