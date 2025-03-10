@@ -161,7 +161,7 @@ public class UserRepositoryImpl implements UserRepository {
         .email(r.getString(EMAIL))
         .dateOfBirth(r.getDate(DATE_OF_BIRTH))
         .phone(r.getLong(PHONE))
-        .accountStatus(AccountStatus.valueOf(r.getString(ACCOUNT_STATUS)))
+        .accountStatus(AccountStatus.getAccountStatus(r.getString(ACCOUNT_STATUS)))
         .build();
   }
 
