@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void create(UserContext context) throws ApiException, JsonProcessingException, SQLException {
+  public UserDTO create(UserContext context) throws ApiException, JsonProcessingException, SQLException {
     final var userData = mapper.readValue(context.context().body(), UserData.class);
     final var userOptional = userRepository.findByEmail(userData.email());
 
@@ -47,6 +47,29 @@ public class UserServiceImpl implements UserService {
     }
 
     final var userEntity = userMapper.toUserEntity(userData);
-    userRepository.create(userEntity);
+    final var newUser = userRepository.create(userEntity);
+    return userMapper.toUserDTO(newUser);
+  }
+
+  @Override
+  public void update(UserContext context) throws SQLException, JsonProcessingException, ApiException {
+    final var userData = mapper.readValue(context.context().body(), UserDTO.class);
+    final var userOptional = userRepository.findByEmail(userData.email());
+
+    if (userOptional.isPresent()) {
+      log.warn("Email de usuario já cadastrado");
+      throw new ApiException("email already registered.");
+    }
+
+    final var userEntity = userMapper.toUserEntity(userData);
+    userRepository.update(userEntity);
+  }
+
+  @Override
+  public void delete(UserContext context) throws SQLException, ApiException {
+    if (context.userId().isEmpty()) {
+      throw new ApiException("user_id is null or invalid");
+    }
+    userRepository.delete(Long.parseLong(context.userId()));
   }
 }

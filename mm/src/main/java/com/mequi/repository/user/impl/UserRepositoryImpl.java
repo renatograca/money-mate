@@ -4,9 +4,11 @@ import com.google.inject.Inject;
 import com.mequi.exceptions.UserNotFoundException;
 import com.mequi.repository.user.UserRepository;
 import com.mequi.repository.user.entity.UserEntity;
-import com.mequi.service.user.dto.StatusAccount;
+import com.mequi.service.user.dto.AccountStatus;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,7 @@ public class UserRepositoryImpl implements UserRepository {
   @Override
   public Optional<UserEntity> findById(Long id) throws UserNotFoundException {
     final var data = buildDataString(ID, FULL_NAME, PASSWORD_HASH, EMAIL, DATE_OF_BIRTH, PHONE, ACCOUNT_STATUS);
-    final var query = "SELECT " + data + " FROM users WHERE id = ?";
+    final var query = "SELECT " + data + " FROM users WHERE id = ? and account_status != 'DELETED'";
     try(
         final var conn = dataSource.getConnection();
         final var stmt = conn.prepareStatement(query)
@@ -39,14 +41,14 @@ public class UserRepositoryImpl implements UserRepository {
       }
     } catch (SQLException e) {
       log.error("Error ao encontrar o usuário {}", id);
-      throw new UserNotFoundException("Error find user");
+      throw new UserNotFoundException("User not found", e);
     }
     return Optional.empty();
   }
 
   @Override
   public Optional<UserEntity> findByEmail(String email) {
-    final var data = buildDataString(FULL_NAME, EMAIL, DATE_OF_BIRTH, PHONE, ACCOUNT_STATUS);
+    final var data = buildDataString(ID, FULL_NAME, PASSWORD_HASH, EMAIL, DATE_OF_BIRTH, PHONE, ACCOUNT_STATUS);
 
     final var query = "SELECT " + data + " FROM users WHERE email = ?";
     try(
@@ -64,7 +66,7 @@ public class UserRepositoryImpl implements UserRepository {
   }
 
   @Override
-  public void create(UserEntity userData) throws SQLException {
+  public UserEntity create(UserEntity userData) throws SQLException {
     final var data = "("
         + buildDataString(FULL_NAME, PASSWORD_HASH, EMAIL, DATE_OF_BIRTH, PHONE, ACCOUNT_STATUS)
         + ")";
@@ -79,11 +81,76 @@ public class UserRepositoryImpl implements UserRepository {
       stmt.setDate(4, userData.dateOfBirth());
       stmt.setLong(5, userData.phone());
       stmt.setString(6, userData.accountStatus().name());
-      stmt.executeUpdate();
+      final var resultSet = stmt.executeQuery();
+
+      return mapUserEntity(resultSet);
     } catch (SQLException e) {
       log.error("Erro ao criar usuario");
       throw e;
     }
+  }
+
+  @Override
+  public void update(UserEntity userData) throws SQLException {
+    final var query = buildUpdateQuery(userData);
+    try(
+        final var conn = dataSource.getConnection();
+        final var stmt = conn.prepareStatement(query)
+    ) {
+
+      stmt.executeUpdate();
+    } catch (SQLException e) {
+      log.error("Erro ao atualizar usuario");
+      throw e;
+    }
+  }
+
+  @Override
+  public void delete(Long userId) throws SQLException {
+  final var query = "UPDATE users SET "
+      + updateValue(ACCOUNT_STATUS, AccountStatus.DELETED.name())
+      + " WHERE id = " + userId;
+
+    try(
+        final var conn = dataSource.getConnection();
+        final var stmt = conn.prepareStatement(query)
+    ) {
+
+      stmt.executeUpdate();
+    } catch (SQLException e) {
+      log.error("Erro ao deletar usuario");
+      throw e;
+    }
+  }
+
+  private String buildUpdateQuery(UserEntity user) {
+    final var query = new StringBuilder("UPDATE users SET ");
+    final var updates = new ArrayList<String>();
+
+    if (Objects.nonNull(user.fullName())) {
+      updates.add(updateValue(FULL_NAME, user.fullName()));
+    }
+
+    if (Objects.nonNull(user.dateOfBirth())) {
+      updates.add(updateValue(DATE_OF_BIRTH, String.valueOf(user.dateOfBirth())));
+    }
+
+    if (Objects.nonNull(user.email())) {
+      updates.add(updateValue(EMAIL, user.email()));
+    }
+
+    if (Objects.nonNull(user.phone())) {
+      updates.add(updateValue(PHONE, String.valueOf(user.phone())));
+    }
+
+    query.append(String.join(", ", updates));
+    query.append(" WHERE id = ").append(user.id());
+
+    return query.toString();
+  }
+
+  private String updateValue(String filed, String value) {
+    return filed + " = " + "'" + value + "'";
   }
 
   private UserEntity mapUserEntity(ResultSet r) throws SQLException {
@@ -94,7 +161,7 @@ public class UserRepositoryImpl implements UserRepository {
         .email(r.getString(EMAIL))
         .dateOfBirth(r.getDate(DATE_OF_BIRTH))
         .phone(r.getLong(PHONE))
-        .accountStatus(StatusAccount.valueOf(r.getString(ACCOUNT_STATUS)))
+        .accountStatus(AccountStatus.getAccountStatus(r.getString(ACCOUNT_STATUS)))
         .build();
   }
 

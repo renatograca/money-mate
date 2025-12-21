@@ -3,6 +3,8 @@ package unit;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mequi.exceptions.ApiException;
 import com.mequi.exceptions.UserNotFoundException;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -61,15 +63,16 @@ class UserControllerTest {
   @Test
   void testCreateUser() throws SQLException, JsonProcessingException, ApiException {
     // Arrange
-    final var userContext = new UserContext("/users", context);
+    final var userContext = new UserContext("/users", "", context);
     when(userContextService.apply(context)).thenReturn(userContext);
+    when(service.create(any())).thenReturn(UserDTO.builder().build());
 
     // Act
     userController.createUser(context);
 
     // Assert
     verify(service).create(userContext);
-    verify(context).json("Usuario criado com sucesso.");
+    verify(context).json(any(UserDTO.class));
     verify(context).status(HttpStatus.CREATED);
   }
 }

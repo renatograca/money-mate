@@ -19,13 +19,13 @@ public class ExceptionHandlerRoutes implements Routers {
   @Override
   public void addRoutes(Javalin server) {
     server.exception(UserNotFoundException.class, (e, context) -> {
-      context.status(HttpStatus.BAD_REQUEST);
+      context.status(HttpStatus.NOT_FOUND);
       context.json(ErrorResponse.builder().message(e.getMessage()).build());
     });
 
     server.exception(InvalidPasswordException.class, (e, context) -> {
       context.status(HttpStatus.UNAUTHORIZED);
-      context.json(ErrorResponse.builder().message(e.getMessage()).build());
+      context.json(ErrorResponse.builder().message(e.getMessage()).exception(e.getCause()).build());
     });
 
     server.exception(ApiException.class, (e, context) -> {
